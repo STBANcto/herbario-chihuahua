@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Herbario Digital de Chihuahua – Colección botánica de 16 especies nativas del estado de Chihuahua, México."/>
+  <title>Avajer Herbarium · Flora de Chihuahua</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green-deep:   #1b3a2d;
+      --green-mid:    #2d5a3d;
+      --green-light:  #4a7c59;
+      --green-accent: #6fa67d;
+      --cream:        #f4efe6;
+      --parchment:    #ede5d4;
+      --tan:          #c9b99a;
+      --text-dark:    #1a1a18;
+      --text-mid:     #3d3d38;
+      --text-muted:   #7a7a72;
+      --white:        #ffffff;
+      --gold:         #c8a96e;
+      --gold-light:   #e8d5a3;
+      --radius-sm:    6px;
+      --radius-md:    14px;
+      --shadow-soft:  0 4px 24px rgba(27,58,45,0.10);
+      --shadow-card:  0 8px 40px rgba(27,58,45,0.14);
+      --transition:   0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text-dark); overflow-x: hidden; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--green-accent));
+      width: 0%; z-index: 9999; transition: width 0.1s linear;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2.5rem;
+      transition: background var(--transition), backdrop-filter var(--transition), box-shadow var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(27,58,45,0.95);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif; font-size: 1.1rem;
+      color: var(--white); letter-spacing: 0.08em;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    nav.scrolled .nav-logo { opacity: 1; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.85); font-size: 0.8rem;
+      font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 78vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; background: var(--green-deep);
+    }
+    .hero-bg { position: absolute; inset: 0; background: var(--green-deep); }
+    .hero-texture {
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(106,166,125,0.12) 0%, transparent 60%),
+        radial-gradient(circle at 80% 25%, rgba(200,169,110,0.09) 0%, transparent 55%);
+    }
+
+    /* Hero text block */
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 1100px; width: 100%;
+      padding: 6.5rem 3rem 5rem; color: var(--white);
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500; margin-bottom: 0.8rem;
+      animation: fadeInUp 0.8s 0.2s both;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 700; line-height: 1.1; letter-spacing: 0.03em;
+      margin-bottom: 0.6rem; animation: fadeInUp 0.8s 0.4s both;
+    }
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 300;
+      color: rgba(255,255,255,0.75); margin-bottom: 1.5rem;
+      font-family: 'EB Garamond', serif; font-style: italic;
+      animation: fadeInUp 0.8s 0.6s both;
+    }
+    .hero-divider {
+      width: 60px; height: 1px; background: rgba(200,169,110,0.5);
+      margin: 1rem 0; animation: fadeInUp 0.8s 0.7s both;
+    }
+    .hero-meta {
+      display: flex; gap: 2rem; flex-wrap: wrap; font-size: 0.78rem;
+      color: rgba(255,255,255,0.65); letter-spacing: 0.05em;
+      animation: fadeInUp 0.8s 0.9s both;
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
+    .hero-meta span::before { content: '·'; color: var(--gold); }
+    .hero-meta span:first-child::before { display: none; }
+    .hero-byline {
+      margin-top: 1rem; font-size: 0.75rem;
+      color: var(--gold); font-style: italic;
+      animation: fadeInUp 0.8s 1.0s both;
+    }
+    .scroll-cta {
+      position: absolute; bottom: 1.8rem; left: 50%;
+      transform: translateX(-50%); z-index: 10;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: rgba(255,255,255,0.5); font-size: 0.65rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      animation: float 2.5s ease-in-out infinite;
+    }
+    .scroll-cta .arrow {
+      width: 24px; height: 24px;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: rotate(45deg);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── STATS STRIP ── */
+    .intro-strip {
+      background: var(--parchment);
+      border-top: 3px solid var(--gold);
+      border-bottom: 1px solid var(--tan);
+      padding: 2.5rem 3rem;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;
+    }
+    .intro-stat {
+      text-align: center; opacity: 0; transform: translateY(20px);
+      transition: all 0.6s ease;
+    }
+    .intro-stat.visible { opacity: 1; transform: translateY(0); }
+    .intro-stat-num {
+      font-family: 'Playfair Display', serif; font-size: 2.5rem;
+      color: var(--green-deep); font-weight: 700;
+    }
+    .intro-stat-label {
+      font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--text-muted); margin-top: 0.3rem;
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section-header { padding: 4rem 3rem 2rem; position: relative; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--green-deep); font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .section-desc {
+      color: var(--text-muted); max-width: 600px; line-height: 1.6;
+      font-family: 'EB Garamond', serif; font-size: 1rem;
+    }
+    .section-line {
+      position: absolute; left: 3rem; bottom: 0;
+      width: 50px; height: 2px; background: var(--gold);
+    }
+
+    /* ── PLANT CONTAINER ── */
+    .plants-container { padding: 1rem 2.5rem 4rem; max-width: 1100px; margin: 0 auto; }
+
+    /* ── PLANT CARD ── */
+    .plant-card {
+      background: var(--white); border-radius: var(--radius-md);
+      margin-bottom: 1rem; box-shadow: var(--shadow-soft);
+      overflow: hidden; border: 1px solid rgba(201,185,154,0.3);
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+    }
+    .plant-card.visible { opacity: 1; transform: translateY(0); }
+    .plant-card:hover { box-shadow: var(--shadow-card); }
+
+    /* Card header */
+    .plant-header {
+      display: grid; grid-template-columns: 100px 1fr auto;
+      align-items: center; gap: 1.5rem;
+      padding: 1.2rem 1.5rem; cursor: pointer;
+      transition: background var(--transition);
+    }
+    .plant-header:hover { background: rgba(27,58,45,0.025); }
+    .plant-card.open .plant-header { background: rgba(27,58,45,0.04); }
+
+    .plant-thumb {
+      width: 100px; height: 70px; border-radius: var(--radius-sm);
+      overflow: hidden; flex-shrink: 0; position: relative;
+      background: linear-gradient(135deg, var(--green-mid), var(--green-light));
+    }
+    .plant-thumb img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .plant-header:hover .plant-thumb img { transform: scale(1.08); }
+
+    .plant-info { flex: 1; }
+    .plant-num {
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--green-accent); font-weight: 600; margin-bottom: 0.2rem;
+    }
+    .plant-common {
+      font-family: 'Playfair Display', serif; font-size: 1.1rem;
+      color: var(--green-deep); font-weight: 700; margin-bottom: 0.15rem;
+    }
+    .plant-scientific {
+      font-family: 'EB Garamond', serif; font-size: 0.9rem;
+      color: var(--text-muted); font-style: italic;
+    }
+    .plant-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.4rem; }
+    .badge {
+      font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.2rem 0.6rem; border-radius: 20px; font-weight: 600;
+    }
+    .badge-desert { background: rgba(200,169,110,0.15); color: #8b6914; border: 1px solid rgba(200,169,110,0.4); }
+    .badge-pastizal { background: rgba(74,124,89,0.1); color: var(--green-mid); border: 1px solid rgba(74,124,89,0.3); }
+    .badge-bosque { background: rgba(27,58,45,0.08); color: var(--green-deep); border: 1px solid rgba(27,58,45,0.2); }
+
+    .plant-toggle {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid rgba(27,58,45,0.2);
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition); flex-shrink: 0;
+    }
+    .plant-toggle svg { transition: transform var(--transition); color: var(--green-deep); }
+    .plant-card.open .plant-toggle { background: var(--green-deep); border-color: var(--green-deep); }
+    .plant-card.open .plant-toggle svg { transform: rotate(180deg); color: white; }
+
+    /* Card body — expandable */
+    .plant-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.65s cubic-bezier(0.4,0,0.2,1);
+    }
+    .plant-card.open .plant-body { max-height: 1400px; }
+    .plant-body-inner { border-top: 1px solid rgba(201,185,154,0.3); }
+
+    /* Detail top row: image + description */
+    .plant-detail-top { display: grid; grid-template-columns: 280px 1fr; }
+    .plant-detail-image {
+      position: relative; overflow: hidden; min-height: 240px;
+      background: linear-gradient(160deg, var(--green-mid), var(--green-deep));
+    }
+    .plant-detail-image img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 1s ease;
+    }
+    .plant-card.open .plant-detail-image img { transform: scale(1.03); }
+    .plant-detail-image-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+      color: rgba(255,255,255,0.8); font-size: 0.65rem;
+      padding: 1rem 0.8rem 0.5rem; font-style: italic;
+    }
+    .plant-detail-desc { padding: 1.5rem 1.8rem; background: var(--parchment); }
+    .plant-detail-desc h4 {
+      font-family: 'Playfair Display', serif; font-size: 1.1rem;
+      color: var(--green-deep); margin-bottom: 0.6rem;
+    }
+    .plant-detail-desc p {
+      font-family: 'EB Garamond', serif; font-size: 0.98rem;
+      line-height: 1.65; color: var(--text-mid);
+    }
+
+    /* Info sections grid */
+    .plant-detail-sections { display: grid; grid-template-columns: 1fr 1fr; }
+    .detail-section {
+      padding: 1.4rem 1.8rem;
+      border-top: 1px solid rgba(201,185,154,0.25);
+    }
+    .detail-section:nth-child(even) { border-left: 1px solid rgba(201,185,154,0.25); }
+    .detail-section-title {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--green-accent);
+      font-weight: 600; margin-bottom: 1rem;
+    }
+    .detail-section-title span { width: 20px; height: 1px; background: var(--green-accent); }
+
+    /* Taxonomy table */
+    .taxonomy-table { width: 100%; border-collapse: collapse; }
+    .taxonomy-table td {
+      padding: 0.35rem 0; font-size: 0.84rem;
+      border-bottom: 1px solid rgba(201,185,154,0.2); vertical-align: top;
+    }
+    .taxonomy-table tr:last-child td { border-bottom: none; }
+    .taxonomy-table td:first-child {
+      color: var(--text-muted); font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      width: 90px; padding-right: 1rem;
+    }
+    .taxonomy-table td:last-child {
+      font-family: 'EB Garamond', serif; font-size: 0.95rem; color: var(--text-dark);
+    }
+    .taxonomy-table td:last-child em { font-style: italic; color: var(--text-mid); }
+
+    /* Morphology */
+    .morphology-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .morphology-list li {
+      display: flex; align-items: flex-start; gap: 0.6rem;
+      font-size: 0.84rem; color: var(--text-mid); line-height: 1.4;
+    }
+    .morphology-list li::before {
+      content: ''; width: 6px; height: 6px; background: var(--gold);
+      border-radius: 50%; flex-shrink: 0; margin-top: 0.35rem;
+    }
+    .morpho-part {
+      font-weight: 600; color: var(--green-deep); min-width: 70px;
+      font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    /* Uses — dots instead of emojis */
+    .uses-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .use-item { display: flex; align-items: flex-start; gap: 0.8rem; font-size: 0.84rem; color: var(--text-mid); line-height: 1.4; }
+    .use-dot {
+      flex-shrink: 0; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--green-accent);
+      margin-top: 0.42rem;
+    }
+
+    /* Distribution */
+    .distribution-info { display: flex; flex-direction: column; gap: 0.7rem; }
+    .dist-row { display: flex; gap: 0.8rem; align-items: flex-start; font-size: 0.83rem; }
+    .dist-label {
+      font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted);
+      min-width: 80px; padding-top: 0.1rem;
+    }
+    .dist-val { color: var(--text-mid); line-height: 1.4; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--green-deep); color: rgba(255,255,255,0.6);
+      padding: 3rem; text-align: center;
+    }
+    .footer-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: white; margin-bottom: 0.5rem; }
+    footer p { font-size: 0.8rem; line-height: 1.6; }
+    .footer-gold { color: var(--gold); }
+    .footer-divider { width: 40px; height: 1px; background: rgba(200,169,110,0.4); margin: 1rem auto; }
+
+    /* ── STAGGER DELAYS ── */
+    .plant-card:nth-child(1)  { transition-delay: 0.00s; }
+    .plant-card:nth-child(2)  { transition-delay: 0.05s; }
+    .plant-card:nth-child(3)  { transition-delay: 0.10s; }
+    .plant-card:nth-child(4)  { transition-delay: 0.15s; }
+    .plant-card:nth-child(5)  { transition-delay: 0.20s; }
+    .plant-card:nth-child(6)  { transition-delay: 0.25s; }
+    .plant-card:nth-child(7)  { transition-delay: 0.30s; }
+    .plant-card:nth-child(8)  { transition-delay: 0.35s; }
+    .plant-card:nth-child(9)  { transition-delay: 0.40s; }
+    .plant-card:nth-child(10) { transition-delay: 0.45s; }
+    .plant-card:nth-child(11) { transition-delay: 0.50s; }
+    .plant-card:nth-child(12) { transition-delay: 0.55s; }
+    .plant-card:nth-child(13) { transition-delay: 0.60s; }
+    .plant-card:nth-child(14) { transition-delay: 0.65s; }
+    .plant-card:nth-child(15) { transition-delay: 0.70s; }
+    .plant-card:nth-child(16) { transition-delay: 0.75s; }
+
+    /* ══════════════════════════════════════
+       MOBILE / RESPONSIVE
+    ══════════════════════════════════════ */
+    @media (max-width: 768px) {
+      /* Hero */
+      .hero { min-height: 70vh; }
+      .hero-content { padding: 2rem 1.5rem; }
+
+      /* Stats */
+      .intro-strip { grid-template-columns: 1fr; padding: 2rem 1.5rem; }
+
+      /* Section */
+      .section-header { padding: 2.5rem 1.5rem 1.5rem; }
+      .plants-container { padding: 1rem 1rem 3rem; }
+
+      /* Card header */
+      .plant-header { grid-template-columns: 70px 1fr auto; gap: 1rem; padding: 1rem; }
+      .plant-thumb { width: 70px; height: 50px; }
+
+      /* Card body — SCROLLABLE on mobile */
+      .plant-card.open .plant-body {
+        max-height: 75vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Detail layout */
+      .plant-detail-top { grid-template-columns: 1fr; }
+      .plant-detail-image { min-height: 200px; }
+      .plant-detail-sections { grid-template-columns: 1fr; }
+      .detail-section:nth-child(even) {
+        border-left: none;
+        border-top: 1px solid rgba(201,185,154,0.25);
+      }
+
+      /* Nav */
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav id="main-nav">
+  <div class="nav-logo">Avajer Herbarium</div>
+  <ul class="nav-links">
+    <li><a href="#desierto">Desierto</a></li>
+    <li><a href="#pastizales">Pastizales</a></li>
+    <li><a href="#bosques">Bosques</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-texture"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Colección Botánica Digital · Chihuahua, México</p>
+    <h1 class="hero-title">Avajer Herbarium</h1>
+    <p class="hero-subtitle">Una mirada a nuestras raíces naturales.</p>
+    <div class="hero-divider"></div>
+    <div class="hero-meta">
+      <span>16 especies nativas</span>
+      <span>Flora de Chihuahua</span>
+      <span>Divulgación botánica</span>
+    </div>
+    <p class="hero-byline">Una colección creada por Aleditte Avajer</p>
+  </div>
+
+  <div class="scroll-cta"><span>Explorar</span><div class="arrow"></div></div>
+</section>
+
+<!-- ═══════ STATS ═══════ -->
+<div class="intro-strip">
+  <div class="intro-stat" data-animate>
+    <div class="intro-stat-num">16</div>
+    <div class="intro-stat-label">Especies nativas documentadas</div>
+  </div>
+  <div class="intro-stat" data-animate>
+    <div class="intro-stat-num">5</div>
+    <div class="intro-stat-label">Grandes ecosistemas en Chihuahua</div>
+  </div>
+  <div class="intro-stat" data-animate>
+    <div class="intro-stat-num">∞</div>
+    <div class="intro-stat-label">Valor etnobotánico</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECCIÓN 1: DESIERTO Y MATORRAL
+══════════════════════════════════════════════════ -->
+<div class="section-header" id="desierto">
+  <h2 class="section-title">Desierto y Matorral</h2>
+  <p class="section-desc">Plantas adaptadas a la aridez del desierto chihuahuense, con mecanismos extraordinarios de resistencia a sequía y calor extremo.</p>
+  <div class="section-line"></div>
+</div>
+<div class="plants-container">
+
+<!-- ── 01 LECHUGUILLA ── -->
+<article class="plant-card" id="card-lechuguilla">
+  <div class="plant-header" onclick="toggleCard('card-lechuguilla')">
+    <div class="plant-thumb">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Agave_lechuguilla.jpg/250px-Agave_lechuguilla.jpg?utm_source=es.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Lechuguilla"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 01 · Desierto</div>
+      <div class="plant-common">Lechuguilla</div>
+      <div class="plant-scientific">Agave lechuguilla</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/Agave_lechuguilla.jpg/250px-Agave_lechuguilla.jpg?utm_source=es.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Agave lechuguilla"/>
+          <div class="plant-detail-image-caption">Agave lechuguilla · Desierto Chihuahuense</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La lechuguilla es una planta suculenta icónica del desierto chihuahuense. Sus hojas rígidas y espinosas forman una roseta característica. Es indicadora ecológica del Matorral Xerófilo y ha sido utilizada por comunidades indígenas durante siglos. Crece preferentemente en suelos rocosos y calcáreos entre 1000 y 2000 msnm.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Liliopsida</td></tr>
+            <tr><td>Orden</td><td>Asparagales</td></tr>
+            <tr><td>Familia</td><td>Asparagaceae</td></tr>
+            <tr><td>Género</td><td><em>Agave</em></td></tr>
+            <tr><td>Especie</td><td><em>A. lechuguilla</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Lanceoladas, rígidas, 20–40 cm, espina terminal y márgenes dentados</li>
+            <li><span class="morpho-part">Tallo</span> Rizoma corto subterráneo; escapo floral hasta 4 m</li>
+            <li><span class="morpho-part">Flores</span> Tubulares, amarillo-verdosas, en panículas</li>
+            <li><span class="morpho-part">Fruto</span> Cápsula seca dehiscente, 3–5 cm</li>
+            <li><span class="morpho-part">Raíz</span> Sistema radicular extenso y superficial</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Fibras para fabricar cuerdas, canastos, sandalias y tela</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Hojas con saponinas usadas como jabón natural</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Uso medicinal: antiinflamatorio y tratamiento de heridas</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Extracción de fibra "ixtle" para industria textil</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Coahuila, Durango, Zacatecas</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Matorral xerófilo, suelos rocosos calcáreos</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">1000–2200 msnm</span></div>
+            <div class="dist-row"><span class="dist-label">Clima</span><span class="dist-val">Árido y semiárido, precipitación &lt; 300 mm/año</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 02 SOTOL ── -->
+<article class="plant-card" id="card-sotol">
+  <div class="plant-header" onclick="toggleCard('card-sotol')">
+    <div class="plant-thumb">
+      <img src="https://scontent.fmex4-2.fna.fbcdn.net/v/t1.6435-9/56229313_2089037584551795_477245732160536576_n.jpg?stp=dst-jpg_tt6&cstp=mx1296x1944&ctp=p526x296&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGM-TQHUhFUfRkyhmcEGN5o9AT-Z7yArs30BP5nvICuzX9NEd4kS3phu3QT-UMZdXKO8SBvgJmYZ4dnxDa7XrVI&_nc_ohc=97JWgkibzM0Q7kNvwEbhlYj&_nc_oc=Adou7z-hz6xGkBUZupJiaedxmjjJCZoRunpJhO-OpXFkugBkAHInsM5tvqJb8eVvFA4&_nc_zt=23&_nc_ht=scontent.fmex4-2.fna&_nc_gid=TEGmK5BPaeb8Xxzmbbq8xg&_nc_ss=7a2a8&oh=00_AQQloBbwcn-1l-2l80HYNnNgMtmQaETbZWlmHMrwNBZKOw&oe=6B2598C1" alt="Sotol"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 02 · Desierto</div>
+      <div class="plant-common">Sotol</div>
+      <div class="plant-scientific">Dasylirion leiophyllum</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://scontent.fmex4-2.fna.fbcdn.net/v/t1.6435-9/56229313_2089037584551795_477245732160536576_n.jpg?stp=dst-jpg_tt6&cstp=mx1296x1944&ctp=p526x296&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeGM-TQHUhFUfRkyhmcEGN5o9AT-Z7yArs30BP5nvICuzX9NEd4kS3phu3QT-UMZdXKO8SBvgJmYZ4dnxDa7XrVI&_nc_ohc=97JWgkibzM0Q7kNvwEbhlYj&_nc_oc=Adou7z-hz6xGkBUZupJiaedxmjjJCZoRunpJhO-OpXFkugBkAHInsM5tvqJb8eVvFA4&_nc_zt=23&_nc_ht=scontent.fmex4-2.fna&_nc_gid=TEGmK5BPaeb8Xxzmbbq8xg&_nc_ss=7a2a8&oh=00_AQQloBbwcn-1l-2l80HYNnNgMtmQaETbZWlmHMrwNBZKOw&oe=6B2598C1" alt="Dasylirion leiophyllum"/>
+          <div class="plant-detail-image-caption">Dasylirion leiophyllum · Chihuahua, México</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>El sotol es una planta emblemática del norte de México, símbolo del estado de Chihuahua. Sus hojas largas y fibrosas emergen de una base leñosa. Es la materia prima de la bebida destilada "Sotol", denominación de origen de Chihuahua. Crece en zonas áridas y semiáridas entre 1000 y 2500 msnm.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Liliopsida</td></tr>
+            <tr><td>Orden</td><td>Asparagales</td></tr>
+            <tr><td>Familia</td><td>Asparagaceae</td></tr>
+            <tr><td>Género</td><td><em>Dasylirion</em></td></tr>
+            <tr><td>Especie</td><td><em>D. leiophyllum</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Linear-lanceoladas, 60–100 cm, dientes hacia abajo</li>
+            <li><span class="morpho-part">Tallo</span> Caudex leñoso, esférico, hasta 1 m de alto</li>
+            <li><span class="morpho-part">Flores</span> Pequeñas, blancas, en escapo de 2–4 m; dioicas</li>
+            <li><span class="morpho-part">Fruto</span> Sámara alada, 3-alar, 7–10 mm</li>
+            <li><span class="morpho-part">Raíz</span> Profunda y ramificada, adaptada a suelos pobres</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Destilado artesanal "Sotol" con denominación de origen en Chihuahua</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Hojas usadas para techar, hacer cestería y cuerdas</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Alimento para ganado y fauna silvestre (venado, jabalí)</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Corazón de la planta asado como alimento por grupos indígenas</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Durango, Coahuila, Nuevo León</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Matorral desértico rosetófilo, pastizales</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">1000–2500 msnm</span></div>
+            <div class="dist-row"><span class="dist-label">Status</span><span class="dist-val">Protegida; sujeta a presión por sobreexplotación</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 03 NOLINA ── -->
+<article class="plant-card" id="card-nolina">
+  <div class="plant-header" onclick="toggleCard('card-nolina')">
+    <div class="plant-thumb">
+      <img src="https://mswn.com/wp-content/uploads/2018/06/Nolina-texana-26-wpcf_180x150.jpg" alt="Nolina"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 03 · Desierto</div>
+      <div class="plant-common">Nolina / Sacahuista</div>
+      <div class="plant-scientific">Nolina texana</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://mswn.com/wp-content/uploads/2018/06/Nolina-texana-26-wpcf_180x150.jpg" alt="Nolina texana"/>
+          <div class="plant-detail-image-caption">Nolina texana · Pastizal y matorral</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La nolina o sacahuista forma densos macollos de hojas fibrosas y largas. Es característica de las zonas de transición entre pastizales y matorral xerófilo. Sus fibras resistentes han sido aprovechadas por comunidades rurales en Chihuahua para actividades artesanales y como forraje de emergencia para ganado.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Liliopsida</td></tr>
+            <tr><td>Orden</td><td>Asparagales</td></tr>
+            <tr><td>Familia</td><td>Asparagaceae</td></tr>
+            <tr><td>Género</td><td><em>Nolina</em></td></tr>
+            <tr><td>Especie</td><td><em>N. texana</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Linear-acuminadas, flexibles, 40–90 cm, en densa roseta basal</li>
+            <li><span class="morpho-part">Tallo</span> Acaule o muy corto, rizomatoso</li>
+            <li><span class="morpho-part">Flores</span> Blancas a cremas, en panícula terminal de 1–2 m</li>
+            <li><span class="morpho-part">Fruto</span> Cápsula inflada, trialada, 8–12 mm</li>
+            <li><span class="morpho-part">Raíz</span> Fibrosa, densa, superficial</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Fibras para cestería, sombreros y artesanías</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Forraje de emergencia para ganado en épocas de sequía</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Techado y construcción de muros en comunidades rurales</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Estabilizadora de suelos contra la erosión</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Coahuila, Texas (EUA)</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Pastizales, laderas de cerros, matorral</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">900–2000 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 04 OCOTILLO ── -->
+<article class="plant-card" id="card-ocotillo">
+  <div class="plant-header" onclick="toggleCard('card-ocotillo')">
+    <div class="plant-thumb">
+      <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/443239410/large.jpeg" alt="Ocotillo"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 04 · Desierto</div>
+      <div class="plant-common">Ocotillo</div>
+      <div class="plant-scientific">Fouquieria splendens</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/443239410/large.jpeg" alt="Fouquieria splendens"/>
+          <div class="plant-detail-image-caption">Fouquieria splendens en floración · Desierto Chihuahuense</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>El ocotillo es uno de los arbustos más vistosos del desierto chihuahuense. Sus tallos erectos y espinosos, que pueden alcanzar 6 m, se cubren de hojas pequeñas tras las lluvias y producen llamativas flores rojas que atraen colibríes. Se adapta a suelos pobres y rocosos con precipitaciones muy escasas.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Magnoliopsida</td></tr>
+            <tr><td>Orden</td><td>Ericales</td></tr>
+            <tr><td>Familia</td><td>Fouquieriaceae</td></tr>
+            <tr><td>Género</td><td><em>Fouquieria</em></td></tr>
+            <tr><td>Especie</td><td><em>F. splendens</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Tallos</span> Erectos, espinosos, verdes, 2–6 m de alto</li>
+            <li><span class="morpho-part">Hojas</span> Pequeñas, ovadas, caducas, brotan tras la lluvia</li>
+            <li><span class="morpho-part">Flores</span> Tubulares, rojas escarlatas, en racimos terminales</li>
+            <li><span class="morpho-part">Fruto</span> Cápsula elipsoide, 1.5 cm, semillas aladas</li>
+            <li><span class="morpho-part">Raíz</span> Profunda, pivotante con ramificaciones laterales</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Ramas usadas en cercas vivas para corrales y propiedades</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Uso medicinal: infusiones para tos y enfermedades respiratorias</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Planta ornamental de alto valor en jardines xerofíticos</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Refugio y alimento para colibríes y aves polinizadoras</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Sonora, Coahuila, Baja California</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Laderas rocosas, bajadas pedregosas</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">0–1800 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 05 CANDELILLA ── -->
+<article class="plant-card" id="card-candelilla">
+  <div class="plant-header" onclick="toggleCard('card-candelilla')">
+    <div class="plant-thumb">
+      <img src="https://cienciauanl.uanl.mx/wp-content/uploads/2021/10/candelilla-768x576.jpg" alt="Candelilla"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 05 · Desierto</div>
+      <div class="plant-common">Candelilla</div>
+      <div class="plant-scientific">Euphorbia antisyphilitica</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://cienciauanl.uanl.mx/wp-content/uploads/2021/10/candelilla-768x576.jpg" alt="Euphorbia antisyphilitica"/>
+          <div class="plant-detail-image-caption">Euphorbia antisyphilitica · Matorral Chihuahuense</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La candelilla es una planta arbustiva de tallos grisáceos recubiertos por una gruesa capa de cera. Esta cera natural tiene altísimo valor industrial y es usada en cosméticos, lubricantes y recubrimientos alimentarios. Es una de las plantas económicamente más importantes del desierto chihuahuense.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Magnoliopsida</td></tr>
+            <tr><td>Orden</td><td>Malpighiales</td></tr>
+            <tr><td>Familia</td><td>Euphorbiaceae</td></tr>
+            <tr><td>Género</td><td><em>Euphorbia</em></td></tr>
+            <tr><td>Especie</td><td><em>E. antisyphilitica</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Tallos</span> Cilíndricos, erectos, 30–90 cm, recubiertos de cera grisácea</li>
+            <li><span class="morpho-part">Hojas</span> Muy pequeñas, caducas, escasas</li>
+            <li><span class="morpho-part">Flores</span> Cyathios rosados a blancos, en ápice de tallos</li>
+            <li><span class="morpho-part">Fruto</span> Cápsula trilocular pequeña</li>
+            <li><span class="morpho-part">Raíz</span> Leñosa, profunda, pivotante</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Cera usada en cosméticos: labiales, brillos y cremas</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Recubrimiento de dulces, chicles y frutas (FDA aprobado)</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Uso medicinal: tratamiento de enfermedades venéreas e inflamaciones</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Fabricación de velas y lustradores de zapatos</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Coahuila, Durango, San Luis Potosí</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Matorral desértico calcáreo, bajadas rocosas</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">600–2000 msnm</span></div>
+            <div class="dist-row"><span class="dist-label">Status</span><span class="dist-val">En riesgo por sobreexplotación industrial</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 06 GOBERNADORA ── -->
+<article class="plant-card" id="card-gobernadora">
+  <div class="plant-header" onclick="toggleCard('card-gobernadora')">
+    <div class="plant-thumb">
+      <img src="https://tollanherbolaria.com/wp-content/uploads/2022/07/La-gobernadora-1024x685.jpg" alt="Gobernadora"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 06 · Desierto</div>
+      <div class="plant-common">Gobernadora / Hediondilla</div>
+      <div class="plant-scientific">Larrea tridentata</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://tollanherbolaria.com/wp-content/uploads/2022/07/La-gobernadora-1024x685.jpg" alt="Larrea tridentata"/>
+          <div class="plant-detail-image-caption">Larrea tridentata en flor · Desierto Chihuahuense</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La gobernadora es el arbusto más dominante de los desiertos calientes de América del Norte. Libera resinas aromáticas tras la lluvia, creando el inconfundible olor del desierto. Algunos especímenes tienen más de 10,000 años de vida, siendo de los organismos más longevos del planeta.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Magnoliopsida</td></tr>
+            <tr><td>Orden</td><td>Zygophyllales</td></tr>
+            <tr><td>Familia</td><td>Zygophyllaceae</td></tr>
+            <tr><td>Género</td><td><em>Larrea</em></td></tr>
+            <tr><td>Especie</td><td><em>L. tridentata</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Bifoliadas, resinosas, verdes oscuras, 1–2 cm, persistentes</li>
+            <li><span class="morpho-part">Tallo</span> Leñoso, nudos con anillos oscuros, hasta 3 m</li>
+            <li><span class="morpho-part">Flores</span> Amarillas, 5 pétalos, solitarias en axilas foliares</li>
+            <li><span class="morpho-part">Fruto</span> Esquizocárpico, esférico, lanoso-blanco</li>
+            <li><span class="morpho-part">Raíz</span> Sistema dual: superficial extenso y pivotante profundo</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Medicina tradicional: artritis, dolor, enfermedades de la piel</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Resina (NDGA) con propiedades antioxidantes investigadas</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Insecticida y antimicrobiano natural</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Fijadora de suelos y barrera contra erosión</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Sonora, Coahuila, Tamaulipas</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Llanos desérticos, bajadas pedregosas</span></div>
+            <div class="dist-row"><span class="dist-label">Longevidad</span><span class="dist-val">Hasta 11,700 años (clones documentados)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 07 MEZQUITE ── -->
+<article class="plant-card" id="card-mezquite">
+  <div class="plant-header" onclick="toggleCard('card-mezquite')">
+    <div class="plant-thumb">
+      <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/160456955/medium.jpg" alt="Mezquite"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 07 · Desierto</div>
+      <div class="plant-common">Mezquite</div>
+      <div class="plant-scientific">Prosopis glandulosa</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral / Pastizal</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/160456955/medium.jpg" alt="Prosopis glandulosa"/>
+          <div class="plant-detail-image-caption">Prosopis glandulosa · Árbol del desierto</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>El mezquite es uno de los árboles más importantes y versátiles del norte de México. Fija nitrógeno atmosférico, enriqueciendo los suelos pobres. Sus vainas dulces y nutritivas han sido alimento humano y animal por milenios. Su madera extremadamente dura es valorada para construcción y como combustible de alta calidad.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Magnoliopsida</td></tr>
+            <tr><td>Orden</td><td>Fabales</td></tr>
+            <tr><td>Familia</td><td>Fabaceae</td></tr>
+            <tr><td>Género</td><td><em>Prosopis</em></td></tr>
+            <tr><td>Especie</td><td><em>P. glandulosa</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Pinnadas, 2 pares de pinnas, 7–18 pares de folíolos</li>
+            <li><span class="morpho-part">Tallo</span> Árbol o arbusto, 3–10 m; espinas axilares fuertes</li>
+            <li><span class="morpho-part">Flores</span> Pequeñas, amarillo-verdosas, en espigas cilíndricas</li>
+            <li><span class="morpho-part">Fruto</span> Legumbre linear, 10–20 cm, dulce y nutritiva</li>
+            <li><span class="morpho-part">Raíz</span> Pivotante extrema, hasta 50 m de profundidad</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Vainas molidas para harina y atole; alimento tradicional rarámuri</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Madera muy dura para construcción, muebles y postes</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Carbón de mezquite de alta calidad para cocción</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Uso medicinal: goma/resina para problemas oculares y digestivos</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Todo el norte de México y SW de EUA</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Arroyos, llanos, zonas de agostadero</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">0–2000 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 08 HOJASÉN ── -->
+<article class="plant-card" id="card-hojasen">
+  <div class="plant-header" onclick="toggleCard('card-hojasen')">
+    <div class="plant-thumb">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Flourensia_cernua_inflorescence_2.jpg/250px-Flourensia_cernua_inflorescence_2.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Hojasén"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 08 · Desierto</div>
+      <div class="plant-common">Hojasén / Blackbrush</div>
+      <div class="plant-scientific">Flourensia cernua</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Flourensia_cernua_inflorescence_2.jpg/250px-Flourensia_cernua_inflorescence_2.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Flourensia cernua"/>
+          <div class="plant-detail-image-caption">Flourensia cernua · Matorral Chihuahuense</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>El hojasén es un arbusto aromático resinoso del matorral desértico chihuahuense. Sus hojas secretan una resina con aroma penetrante y es alelopático, inhibiendo el crecimiento de otras plantas. Florece en otoño con flores amarillas. Es indicador de sobrepastoreo cuando aumenta su densidad en pastizales.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Magnoliopsida</td></tr>
+            <tr><td>Orden</td><td>Asterales</td></tr>
+            <tr><td>Familia</td><td>Asteraceae</td></tr>
+            <tr><td>Género</td><td><em>Flourensia</em></td></tr>
+            <tr><td>Especie</td><td><em>F. cernua</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Ovadas, alternas, pegajosas y resinosas, 1–3 cm</li>
+            <li><span class="morpho-part">Tallo</span> Arbusto erecto a arqueado, 0.5–2 m</li>
+            <li><span class="morpho-part">Flores</span> Capítulos amarillos, colgantes, con lígulas rayadas</li>
+            <li><span class="morpho-part">Fruto</span> Aquenio oscuro con vilano corto</li>
+            <li><span class="morpho-part">Raíz</span> Leñosa, ramificada, superficial</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Infusión para tratamiento de diabetes e inflamaciones</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Extractos con propiedades antimicrobianas documentadas</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Planta indicadora de sobrepastoreo en pastizales</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Estudio de alelopatía para control natural de malezas</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Coahuila, Texas, Nuevo México</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Llanos arcillosos, suelos salinos</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">900–1800 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 09 MARIOLA ── -->
+<article class="plant-card" id="card-mariola">
+  <div class="plant-header" onclick="toggleCard('card-mariola')">
+    <div class="plant-thumb">
+      <img src="http://www.conabio.gob.mx/malezasdemexico/asteraceae/parthenium-incanum/imagenes/habito-en-habitat.jpg" alt="Mariola"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 09 · Desierto</div>
+      <div class="plant-common">Mariola</div>
+      <div class="plant-scientific">Parthenium incanum</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="http://www.conabio.gob.mx/malezasdemexico/asteraceae/parthenium-incanum/imagenes/habito-en-habitat.jpg" alt="Parthenium incanum"/>
+          <div class="plant-detail-image-caption">Parthenium incanum · Mariola del desierto</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La mariola es un arbusto gris-plateado del matorral desértico chihuahuense. Sus hojas cenicientas reflejan la luz solar como adaptación al calor extremo. Contiene látex con potencial industrial similar al hule. Es alelopática e indicadora de disturbio en pastizales.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Magnoliopsida</td></tr>
+            <tr><td>Orden</td><td>Asterales</td></tr>
+            <tr><td>Familia</td><td>Asteraceae</td></tr>
+            <tr><td>Género</td><td><em>Parthenium</em></td></tr>
+            <tr><td>Especie</td><td><em>P. incanum</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Alternas, obovadas, canescentes (gris-plateadas), 1–4 cm</li>
+            <li><span class="morpho-part">Tallo</span> Arbusto muy ramificado, 0.4–1.5 m</li>
+            <li><span class="morpho-part">Flores</span> Capítulos muy pequeños, blancos, en panículas terminales</li>
+            <li><span class="morpho-part">Fruto</span> Aquenios con 2 escamas estériles</li>
+            <li><span class="morpho-part">Raíz</span> Profunda, con látex blanquecino</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Medicina tradicional: antiséptico, antiinflamatorio y para fiebre</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Látex estudiado como fuente alternativa de caucho natural</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Restauración ecológica en zonas áridas degradadas</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Coahuila, Zacatecas, Texas</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Llanos calcáreos, matorral xerófilo</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">1000–2000 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 10 SANGRE DE DRAGO ── -->
+<article class="plant-card" id="card-sangredrago">
+  <div class="plant-header" onclick="toggleCard('card-sangredrago')">
+    <div class="plant-thumb">
+      <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/4521227/large.jpg" alt="Sangre de Drago"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 10 · Desierto</div>
+      <div class="plant-common">Sangre de Drago</div>
+      <div class="plant-scientific">Jatropha dioica</div>
+      <div class="plant-badges"><span class="badge badge-desert">Matorral Xerófilo</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/199820966/large.jpeg" alt="Jatropha dioica"/>
+          <div class="plant-detail-image-caption">Jatropha dioica · Sangre de drago</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La sangre de drago recibe su nombre por la savia roja-sangre que exuda cuando se corta su corteza. Es un subarbusto curioso con tallos suculentos de color gris rojizo. Planta dioica (pies masculinos y femeninos separados). La savia ha sido usada en medicina tradicional por grupos indígenas del norte de México durante siglos.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Magnoliopsida</td></tr>
+            <tr><td>Orden</td><td>Malpighiales</td></tr>
+            <tr><td>Familia</td><td>Euphorbiaceae</td></tr>
+            <tr><td>Género</td><td><em>Jatropha</em></td></tr>
+            <tr><td>Especie</td><td><em>J. dioica</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Tallos</span> Suculentos, grises a rojizos, flexibles, 20–60 cm</li>
+            <li><span class="morpho-part">Hojas</span> Palmatilobadas, caducas, 2–5 cm, brotan tras lluvias</li>
+            <li><span class="morpho-part">Flores</span> Dioicas; masculinas en cimas, femeninas solitarias, rosadas</li>
+            <li><span class="morpho-part">Fruto</span> Cápsula globosa, 3-lobulada; semillas venenosas</li>
+            <li><span class="morpho-part">Raíz</span> Tuberosa, engrosada, con savia roja</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Savia roja usada en heridas, aftas bucales y encías</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Uso dental: astringente natural para inflamación de encías</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Extractos investigados por propiedades antimicrobianas</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Atención: semillas tóxicas, planta con principios activos potentes</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Coahuila, Zacatecas, Durango</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Laderas rocosas, cañadas, matorral seco</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">600–1800 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+</div><!-- /desierto -->
+
+<!-- ══════════════════════════════════════════════════
+     SECCIÓN 2: PASTIZALES
+══════════════════════════════════════════════════ -->
+<div class="section-header" id="pastizales">
+  <h2 class="section-title">Pastizales</h2>
+  <p class="section-desc">Gramíneas y hierbas que conforman las extensas planicies del altiplano chihuahuense, sustento de biodiversidad y economía ganadera regional.</p>
+  <div class="section-line"></div>
+</div>
+<div class="plants-container">
+
+<!-- ── 11 NAVAJITA AZUL ── -->
+<article class="plant-card" id="card-navajita">
+  <div class="plant-header" onclick="toggleCard('card-navajita')">
+    <div class="plant-thumb">
+      <img src="http://www.conabio.gob.mx/malezasdemexico/poaceae/bouteloua-gracilis/fichas/habito-parcial_small.jpg" alt="Navajita Azul"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 11 · Pastizal</div>
+      <div class="plant-common">Navajita Azul / Blue Grama</div>
+      <div class="plant-scientific">Bouteloua gracilis</div>
+      <div class="plant-badges"><span class="badge badge-pastizal">Pastizal Natural</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/79232001/large.jpg" alt="Bouteloua gracilis"/>
+          <div class="plant-detail-image-caption">Bouteloua gracilis · Pastizal chihuahuense</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La navajita azul es la gramínea más característica e importante del pastizal chihuahuense. Es una especie de alta palatabilidad y valor forrajero, clave en la economía ganadera del norte de México. Sus espigas arqueadas en forma de "ceja" son inconfundibles. Resiste el pastoreo moderado y se recupera bien tras las lluvias.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Liliopsida</td></tr>
+            <tr><td>Orden</td><td>Poales</td></tr>
+            <tr><td>Familia</td><td>Poaceae</td></tr>
+            <tr><td>Género</td><td><em>Bouteloua</em></td></tr>
+            <tr><td>Especie</td><td><em>B. gracilis</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Basales, angostas, 10–20 cm, lígula membranosa</li>
+            <li><span class="morpho-part">Tallo</span> Culmo erecto, 15–50 cm, amacollado</li>
+            <li><span class="morpho-part">Infloresc.</span> 1–3 espigas pectinadas en forma de "ceja" curvada</li>
+            <li><span class="morpho-part">Fruto</span> Cariopse ovalado, 2–3 mm</li>
+            <li><span class="morpho-part">Raíz</span> Fibrosa, densa, rizomatosa corta</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Principal forraje del pastizal chihuahuense; ganadería extensiva</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Restauración ecológica y revegetación de zonas degradadas</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Césped ornamental para jardines xéricos en EUA</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Indicadora de salud del pastizal y calidad del suelo</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Todo el altiplano chihuahuense; hasta Alberta, Canadá</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Pastizales de planicies, suelos franco-arenosos</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">1200–2500 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 12 BANDERITA ── -->
+<article class="plant-card" id="card-banderita">
+  <div class="plant-header" onclick="toggleCard('card-banderita')">
+    <div class="plant-thumb">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Bouteloua_curtipendula.jpg/250px-Bouteloua_curtipendula.jpg?utm_source=es.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Banderita"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 12 · Pastizal</div>
+      <div class="plant-common">Banderita / Sideoats Grama</div>
+      <div class="plant-scientific">Bouteloua curtipendula</div>
+      <div class="plant-badges"><span class="badge badge-pastizal">Pastizal Natural</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://www.picturethisai.com/image-handle/website_cmsname/image/1080/154506268784984064.jpeg?x-oss-process=image/format,webp/resize,s_300&v=1.0" alt="Bouteloua curtipendula"/>
+          <div class="plant-detail-image-caption">Bouteloua curtipendula · Banderita del pastizal</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La banderita o "sideoats grama" es una gramínea robusta caracterizada por sus espiguillas colgantes a un solo lado del raquis. Es la hierba estatal de Texas y una de las gramíneas más importantes para conservación de suelos en Norteamérica. Excelente valor forrajero, especialmente en veranos húmedos.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Liliopsida</td></tr>
+            <tr><td>Orden</td><td>Poales</td></tr>
+            <tr><td>Familia</td><td>Poaceae</td></tr>
+            <tr><td>Género</td><td><em>Bouteloua</em></td></tr>
+            <tr><td>Especie</td><td><em>B. curtipendula</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Planas, 15–40 cm, lígula ciliada</li>
+            <li><span class="morpho-part">Tallo</span> Culmo erecto, 40–100 cm, robusto, amacollado</li>
+            <li><span class="morpho-part">Infloresc.</span> Racimo con 20–50 espiguillas unilaterales colgantes</li>
+            <li><span class="morpho-part">Fruto</span> Cariopse elipsoide, anaranjado en madurez</li>
+            <li><span class="morpho-part">Raíz</span> Fibrosa, con rizomas cortos</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Excelente forraje; palatabilidad alta para bovinos y equinos</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Ampliamente usada en revegetación y control de erosión</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Praderas ornamentales y restauración de cuencas hidrográficas</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Todo México árido y semiárido; EUA hasta Minnesota</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Pastizales, laderas rocosas, praderas</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">900–2800 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 13 MUHLENBERGIA ── -->
+<article class="plant-card" id="card-muhlenbergia">
+  <div class="plant-header" onclick="toggleCard('card-muhlenbergia')">
+    <div class="plant-thumb">
+      <img src="https://static.inaturalist.org/photos/238371203/medium.jpg" alt="Muhlenbergia"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 13 · Pastizal</div>
+      <div class="plant-common">Muhlenbergia / Bullgrass</div>
+      <div class="plant-scientific">Muhlenbergia emersleyi</div>
+      <div class="plant-badges"><span class="badge badge-pastizal">Pastizal</span><span class="badge badge-bosque">Zona Serrana</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://www.picturethisai.com/image-handle/website_cmsname/image/1080/349647274624090118.jpeg?x-oss-process=image/format,webp/resize,s_800&v=1.0" alt="Muhlenbergia emersleyi"/>
+          <div class="plant-detail-image-caption">Muhlenbergia emersleyi · Pastizal serrano</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La muhlenbergia es una gramínea robusta y vistosa que forma grandes macollos en zonas de transición entre pastizal y bosque. Sus panículas purpúreas en otoño crean paisajes de gran belleza. Es fundamental en la estabilización de laderas serranas. El género Muhlenbergia es especialmente diverso en Chihuahua.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Liliopsida</td></tr>
+            <tr><td>Orden</td><td>Poales</td></tr>
+            <tr><td>Familia</td><td>Poaceae</td></tr>
+            <tr><td>Género</td><td><em>Muhlenbergia</em></td></tr>
+            <tr><td>Especie</td><td><em>M. emersleyi</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Planas, 30–60 cm, ásperas, amacolladas</li>
+            <li><span class="morpho-part">Tallo</span> Culmo robusto, 60–150 cm, genicúlado en base</li>
+            <li><span class="morpho-part">Infloresc.</span> Panícula abierta, purpúrea a bronceada, 20–40 cm</li>
+            <li><span class="morpho-part">Fruto</span> Cariopse angosto, fusiforme</li>
+            <li><span class="morpho-part">Raíz</span> Fibrosa, densa, con corona nudosa</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Forraje de buena calidad para ganado en temporada húmeda</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Planta ornamental; parientes del género muy populares en jardines</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Estabilización de laderas y control de erosión en sierras</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Sonora, Durango, Arizona</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Laderas rocosas, barrancas, orillas de arroyos</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">1200–2800 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 14 LEPTOCHLOA ── -->
+<article class="plant-card" id="card-leptochloa">
+  <div class="plant-header" onclick="toggleCard('card-leptochloa')">
+    <div class="plant-thumb">
+      <img src="https://alchetron.com/cdn/leptochloa-dubia-ecdf7038-10b8-45cc-bbee-62f2118eb2e-resize-750.jpeg" alt="Leptochloa"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 14 · Pastizal</div>
+      <div class="plant-common">Leptochloa / Green Sprangletop</div>
+      <div class="plant-scientific">Leptochloa dubia</div>
+      <div class="plant-badges"><span class="badge badge-pastizal">Pastizal</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://calphotos.berkeley.edu/imgs/512x768/0000_0000/0720/1588.jpeg" alt="Leptochloa dubia"/>
+          <div class="plant-detail-image-caption">Leptochloa dubia · Pastizal y matorral</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>La leptochloa es una gramínea robusta de verano que coloniza tanto pastizales como márgenes de arroyos y zonas perturbadas. Sus numerosas espigas delgadas le dan una apariencia plumosa. Tiene alta adaptabilidad y crece desde las llanuras hasta las sierras. Es importante en la sucesión ecológica de pastizales perturbados.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Magnoliophyta</td></tr>
+            <tr><td>Clase</td><td>Liliopsida</td></tr>
+            <tr><td>Orden</td><td>Poales</td></tr>
+            <tr><td>Familia</td><td>Poaceae</td></tr>
+            <tr><td>Género</td><td><em>Leptochloa</em></td></tr>
+            <tr><td>Especie</td><td><em>L. dubia</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Planas o enrolladas, 10–40 cm, glaucas</li>
+            <li><span class="morpho-part">Tallo</span> Culmo erecto, 50–120 cm, genicúlado</li>
+            <li><span class="morpho-part">Infloresc.</span> Panícula con 4–15 racimos alternos, 5–12 cm</li>
+            <li><span class="morpho-part">Fruto</span> Cariopse oval, aplanado, 1.5 mm</li>
+            <li><span class="morpho-part">Raíz</span> Fibrosa, poco profunda</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Forraje de verano para ganado; alta producción de biomasa</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Colonizadora pionera en suelos perturbados</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Control de erosión en márgenes de arroyos y canales</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Todo el norte de México; EUA hasta Kansas</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Pastizales, arroyos, terrenos perturbados</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">0–2200 msnm</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+</div><!-- /pastizales -->
+
+<!-- ══════════════════════════════════════════════════
+     SECCIÓN 3: BOSQUES Y ZONAS SERRANAS
+══════════════════════════════════════════════════ -->
+<div class="section-header" id="bosques">
+  <h2 class="section-title">Bosques y Zonas Serranas</h2>
+  <p class="section-desc">Coníferas y especies arbóreas que dominan las cumbres de la Sierra Madre Occidental en Chihuahua, formando los bosques de mayor diversidad del norte de México.</p>
+  <div class="section-line"></div>
+</div>
+<div class="plants-container">
+
+<!-- ── 15 PINO PIÑONERO ── -->
+<article class="plant-card" id="card-pinopinionero">
+  <div class="plant-header" onclick="toggleCard('card-pinopinionero')">
+    <div class="plant-thumb">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Pinus_cembroides_Big_Bend_Nat_Park.jpg/250px-Pinus_cembroides_Big_Bend_Nat_Park.jpg?utm_source=es.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Pino Piñonero"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 15 · Bosque Serrano</div>
+      <div class="plant-common">Pino Piñonero</div>
+      <div class="plant-scientific">Pinus cembroides</div>
+      <div class="plant-badges"><span class="badge badge-bosque">Bosque de Pino</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Pinus_cembroides_Big_Bend_Nat_Park.jpg/250px-Pinus_cembroides_Big_Bend_Nat_Park.jpg?utm_source=es.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Pinus cembroides"/>
+          <div class="plant-detail-image-caption">Pinus cembroides · Sierra Madre Occidental, Chihuahua</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>El pino piñonero produce las famosas semillas de pino o piñones, uno de los alimentos más valiosos de la Sierra Madre. Forma bosques abiertos en zonas semiáridas de montaña. Sus piñones son recolectados ancestralmente por pueblos indígenas, especialmente los Rarámuri de la Sierra Tarahumara.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Pinophyta</td></tr>
+            <tr><td>Clase</td><td>Pinopsida</td></tr>
+            <tr><td>Orden</td><td>Pinales</td></tr>
+            <tr><td>Familia</td><td>Pinaceae</td></tr>
+            <tr><td>Género</td><td><em>Pinus</em></td></tr>
+            <tr><td>Especie</td><td><em>P. cembroides</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Acículas en fascículos de 2–3, de 3–6 cm, glaucas</li>
+            <li><span class="morpho-part">Tallo</span> Árbol de 5–15 m, copa redondeada, corteza gris-café</li>
+            <li><span class="morpho-part">Conos</span> Estróbilos pequeños, ovoides, 3–5 cm</li>
+            <li><span class="morpho-part">Semillas</span> Grandes, sin ala, 1–2 cm (piñones comestibles)</li>
+            <li><span class="morpho-part">Raíz</span> Profunda y ramificada, fijadora de laderas</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Piñones comestibles; recolección ancestral rarámuri y tepehuana</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Semillas ricas en aceites, proteínas y vitamina E</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Madera para leña, postes y construcción rústica</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Resina usada como antiséptico y para problemas respiratorios</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua, Sonora, Durango, Coahuila, NL</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Bosque de pino-encino, laderas serranas</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">1500–2800 msnm</span></div>
+            <div class="dist-row"><span class="dist-label">Status</span><span class="dist-val">Vulnerable por tala y cambio climático</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ── 16 PINO DE ENGELMANN ── -->
+<article class="plant-card" id="card-pinoengelmann">
+  <div class="plant-header" onclick="toggleCard('card-pinoengelmann')">
+    <div class="plant-thumb">
+      <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Pinus_engelmannii_Chiricahua.jpg/250px-Pinus_engelmannii_Chiricahua.jpg?utm_source=es.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Pino de Engelmann"/>
+    </div>
+    <div class="plant-info">
+      <div class="plant-num">Especie 16 · Bosque Serrano</div>
+      <div class="plant-common">Pino de Engelmann / Apache Pine</div>
+      <div class="plant-scientific">Pinus engelmannii</div>
+      <div class="plant-badges"><span class="badge badge-bosque">Bosque de Pino</span></div>
+    </div>
+    <div class="plant-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+  <div class="plant-body">
+    <div class="plant-body-inner">
+      <div class="plant-detail-top">
+        <div class="plant-detail-image">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Pinus_engelmannii_Chiricahua.jpg/250px-Pinus_engelmannii_Chiricahua.jpg?utm_source=es.wikipedia.org&utm_campaign=parser&utm_content=thumbnail" alt="Pinus engelmannii"/>
+          <div class="plant-detail-image-caption">Pinus engelmannii · Sierra Tarahumara, Chihuahua</div>
+        </div>
+        <div class="plant-detail-desc">
+          <h4>Descripción General</h4>
+          <p>El pino de Engelmann o pino apache es una de las especies de pino más imponentes de la Sierra Madre Occidental. Se distingue por sus largas acículas en fascículos de 3, que pueden medir hasta 45 cm. Es un árbol de gran importancia maderera para las comunidades rarámuri. Su área se concentra principalmente en la Sierra Tarahumara de Chihuahua.</p>
+        </div>
+      </div>
+      <div class="plant-detail-sections">
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Taxonomía</div>
+          <table class="taxonomy-table">
+            <tr><td>Reino</td><td>Plantae</td></tr>
+            <tr><td>División</td><td>Pinophyta</td></tr>
+            <tr><td>Clase</td><td>Pinopsida</td></tr>
+            <tr><td>Orden</td><td>Pinales</td></tr>
+            <tr><td>Familia</td><td>Pinaceae</td></tr>
+            <tr><td>Género</td><td><em>Pinus</em></td></tr>
+            <tr><td>Especie</td><td><em>P. engelmannii</em></td></tr>
+          </table>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Morfología</div>
+          <ul class="morphology-list">
+            <li><span class="morpho-part">Hojas</span> Acículas en fascículos de 3 (raro 4), 20–45 cm, muy largas</li>
+            <li><span class="morpho-part">Tallo</span> Árbol de 15–30 m, fuste recto; corteza gruesa y fisurada</li>
+            <li><span class="morpho-part">Conos</span> Estróbilos oblongo-cónicos, 7–14 cm, con espinas</li>
+            <li><span class="morpho-part">Semillas</span> Pequeñas, con ala larga, dispersadas por viento</li>
+            <li><span class="morpho-part">Raíz</span> Profunda, pivotante, estabilizadora de laderas</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Usos Etnobotánicos</div>
+          <div class="uses-list">
+            <div class="use-item"><div class="use-dot"></div><div>Madera de alta calidad para construcción y explotación maderera</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Leña principal de comunidades serranas rarámuri</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Resina medicinal: heridas, irritaciones de piel y pulmones</div></div>
+            <div class="use-item"><div class="use-dot"></div><div>Protector de cuencas hidrográficas de ríos importantes</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <div class="detail-section-title"><span></span>Distribución</div>
+          <div class="distribution-info">
+            <div class="dist-row"><span class="dist-label">Estado</span><span class="dist-val">Chihuahua (principalmente), Sonora, Durango, Arizona</span></div>
+            <div class="dist-row"><span class="dist-label">Hábitat</span><span class="dist-val">Bosque de pino-encino en Sierra Tarahumara</span></div>
+            <div class="dist-row"><span class="dist-label">Altitud</span><span class="dist-val">1800–3100 msnm</span></div>
+            <div class="dist-row"><span class="dist-label">Status</span><span class="dist-val">Amenazado por tala ilegal e incendios</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+</div><!-- /bosques -->
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+  <div class="footer-title">Avajer Herbarium</div>
+  <div class="footer-divider"></div>
+  <p>
+    <span class="footer-gold">Colección Botánica Digital · Chihuahua, México</span><br/>
+    Una colección creada por <strong style="color:white">Aleditte Avajer</strong><br/>
+    16 especies nativas documentadas · Flora del Desierto Chihuahuense y Sierra Madre Occidental
+  </p>
+  <div class="footer-divider"></div>
+  <p style="font-size:0.72rem; margin-top:0.5rem">
+    Información con fines educativos y de divulgación botánica.<br/>
+    Referencias: Flora del Norte de México, CONABIO, iNaturalist, Plants of the World Online.
+  </p>
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const s = document.documentElement.scrollTop;
+    const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progress-bar').style.width = (s / h * 100) + '%';
+  });
+
+  // Nav on scroll
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 80));
+
+  // Toggle accordion
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.plant-card.open').forEach(c => { if (c.id !== id) c.classList.remove('open'); });
+    card.classList.toggle('open', !isOpen);
+    if (!isOpen) {
+      setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+    }
+  }
+
+  // Intersection Observer — fade in cards
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.plant-card, .intro-stat').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
