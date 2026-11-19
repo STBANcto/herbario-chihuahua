@@ -151,7 +151,7 @@
       border-top: 3px solid var(--gold);
       border-bottom: 1px solid var(--tan);
       padding: 2.5rem 3rem;
-      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); justify-content: center; gap: 2rem;
     }
     .intro-stat {
       text-align: center; opacity: 0; transform: translateY(20px);
@@ -467,10 +467,6 @@
   <div class="intro-stat" data-animate>
     <div class="intro-stat-num">5</div>
     <div class="intro-stat-label">Grandes ecosistemas en Chihuahua</div>
-  </div>
-  <div class="intro-stat" data-animate>
-    <div class="intro-stat-num">∞</div>
-    <div class="intro-stat-label">Valor etnobotánico</div>
   </div>
 </div>
 
